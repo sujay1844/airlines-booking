@@ -112,3 +112,27 @@ BEGIN
     END IF;
 END //
 DELIMITER ;
+
+-- Create function to calculate discount based on loyalty points
+DELIMITER //
+CREATE FUNCTION calculate_discount(
+    loyalty_points INT,
+    base_ticket_price DECIMAL(10,2)
+) 
+RETURNS DECIMAL(10,2)
+DETERMINISTIC
+BEGIN
+    DECLARE discount_percentage DECIMAL(5,2);
+    
+    -- Set discount percentage based on loyalty points
+    CASE
+        WHEN loyalty_points >= 10000 THEN SET discount_percentage = 20.0;  -- 20% discount
+        WHEN loyalty_points >= 5000 THEN SET discount_percentage = 10.0;   -- 10% discount
+        WHEN loyalty_points >= 1000 THEN SET discount_percentage = 5.0;    -- 5% discount
+        ELSE SET discount_percentage = 0.0;                                -- No discount
+    END CASE;
+    
+    -- Calculate and return discounted price
+    RETURN base_ticket_price * (1 - discount_percentage/100);
+END //
+DELIMITER ;
